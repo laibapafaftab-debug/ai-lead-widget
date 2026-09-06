@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Lead Widget Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f6f8;
+      margin: 0;
+      padding: 40px;
+    }
+
+    /* Floating Chat Button */
+    #chat-toggle-btn {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      transition: transform 0.2s;
+    }
+    #chat-toggle-btn:hover {
+      transform: scale(1.05);
+    }
+
+    /* Chat Window Box */
+    #chat-box {
+      display: none;
+      position: fixed;
+      bottom: 95px;
+      right: 25px;
+      width: 350px;
+      height: 480px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 1000;
+    }
+
+    .chat-header {
+      background: #007bff;
+      color: white;
+      padding: 15px;
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .chat-messages {
+      flex: 1;
+      padding: 15px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .msg {
+      max-width: 80%;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+    .user-msg {
+      background: #007bff;
+      color: white;
+      align-self: flex-end;
+    }
+    .bot-msg {
+      background: #e9ecef;
+      color: #333;
+      align-self: flex-start;
+    }
+
+    .chat-input-area {
+      display: flex;
+      padding: 10px;
+      border-top: 1px solid #ddd;
+    }
+
+    .chat-input-area input {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      outline: none;
+    }
+
+    .chat-input-area button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      margin-left: 8px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Welcome to My Website</h1>
+  <p>Neeche right side par chat icon dekhein!</p>
+
+  <!-- Floating Button -->
+  <button id="chat-toggle-btn" onclick="toggleChat()">💬</button>
+
+  <!-- Chat Box Container -->
+  <div id="chat-box">
+    <div class="chat-header">
+      <span>AI Support Assistant</span>
+      <span style="cursor:pointer;" onclick="toggleChat()">✖</span>
+    </div>
+    <div class="chat-messages" id="messages">
+      <div class="msg bot-msg">Hello! How can I help you today?</div>
+    </div>
+    <div class="chat-input-area">
+      <input type="text" id="userInput" placeholder="Type a message..." onkeypress="handleKeyPress(event)" />
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <script>
+    function toggleChat() {
+      const box = document.getElementById("chat-box");
+      box.style.display = box.style.display === "flex" ? "none" : "flex";
+    }
+
+    function handleKeyPress(e) {
+      if (e.key === 'Enter') sendMessage();
+    }
+
+    async function sendMessage() {
+      const input = document.getElementById("userInput");
+      const text = input.value.trim();
+      if (!text) return;
+
+      const msgContainer = document.getElementById("messages");
+
+      // User message display
+      msgContainer.innerHTML += `<div class="msg user-msg">${text}</div>`;
+      input.value = "";
+      msgContainer.scrollTop = msgContainer.scrollHeight;
+
+      try {
+        // FastAPI backend request
+        const res = await fetch("http://127.0.0.1:8000/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: text })
+        });
+
+        const data = await res.json();
+        
+        // Bot message display
+        msgContainer.innerHTML += `<div class="msg bot-msg">${data.reply}</div>`;
+      } catch (err) {
+        msgContainer.innerHTML += `<div class="msg bot-msg">Error connecting to server.</div>`;
+      }
+      
+      msgContainer.scrollTop = msgContainer.scrollHeight;
+    }
+  </script>
+</body>
+</html>
