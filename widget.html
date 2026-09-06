@@ -121,11 +121,11 @@
   <!-- Chat Box Container -->
   <div id="chat-box">
     <div class="chat-header">
-      <span>AI Support Assistant</span>
+      <span>AI Support Assistant (Python Dev)</span>
       <span style="cursor:pointer;" onclick="toggleChat()">✖</span>
     </div>
     <div class="chat-messages" id="messages">
-      <div class="msg bot-msg">Hello! How can I help you today?</div>
+      <div class="msg bot-msg">Hello! I'm an AI assistant built by a Python Developer. How can I help you today?</div>
     </div>
     <div class="chat-input-area">
       <input type="text" id="userInput" placeholder="Type a message..." onkeypress="handleKeyPress(event)" />
@@ -156,7 +156,7 @@
       msgContainer.scrollTop = msgContainer.scrollHeight;
 
       try {
-        // FastAPI backend request
+        // FastAPI backend request connection
         const res = await fetch("http://127.0.0.1:8000/api/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -165,10 +165,10 @@
 
         const data = await res.json();
         
-        // Bot message display
+        // Bot message display from FastAPI/Gemini backend
         msgContainer.innerHTML += `<div class="msg bot-msg">${data.reply}</div>`;
       } catch (err) {
-        msgContainer.innerHTML += `<div class="msg bot-msg">Error connecting to server.</div>`;
+        msgContainer.innerHTML += `<div class="msg bot-msg">Error connecting to server. Make sure FastAPI is running!</div>`;
       }
       
       msgContainer.scrollTop = msgContainer.scrollHeight;
